@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;700&family=Libre+Baskerville:wght@400;700&display=swap');
+
+/* Base Styles */
+.home-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #EFE9E0;
+  font-family: 'Libre Baskerville', serif;
+  color: #0F9E99;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Navigation Bar */
+.navbar {
+  width: 100%;
+  background-color: #0F9E99;
+  border-bottom: 1px solid #0c7f7b;
+  position: fixed;
+  z-index: 100;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.8rem 4rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.logo h2 {
+  font-size: 2.2rem;
+  color: #EFE9E0;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.5px;
+  font-style: italic;
+  margin: 0;
+  min-width: 120px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 3rem;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #EFE9E0;
+  font-size: 1.1rem;
+  font-weight: 400;
+  transition: all 0.4s ease;
+  position: relative;
+  font-family: 'Playfair Display', serif;
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  color: #ffffff;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: #ffffff;
+  transition: width 0.4s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.auth-section {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  min-width: 250px;
+  justify-content: flex-end;
+}
+
+.login-btn,
+.logout-btn {
+  padding: 0.8rem 2rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.4s ease;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.login-btn {
+  background: transparent;
+  color: #0F9E99;
+  border: 1px solid #0F9E99;
+}
+
+.logout-btn {
+  background: transparent;
+  color: #c0392b;
+  border: 1px solid #e57373;
+}
+
+.login-btn:hover {
+  background: rgba(15, 158, 153, 0.1);
+}
+
+.logout-btn:hover {
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.welcome-text {
+  color: #666;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: 'Libre Baskerville', serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Hero Section */
+.hero-section {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 2rem;
+  background: #EFE9E0;
+  padding-top: 80px;
+}
+
+.hero-section h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: -1px;
+  line-height: 1.1;
+  color: #0F9E99;
+}
+
+.hero-section p {
+  font-size: 1.1rem;
+  max-width: 700px;
+  margin-bottom: 3rem;
+  line-height: 1.8;
+  color: #2d2d2d;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 2rem;
+}
+
+.action-buttons button {
+  padding: 1.2rem 3.5rem;
+  background: #0F9E99;
+  color: #EFE9E0;
+  border: none;
+  border-radius: 20px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1px;
+}
+
+.action-buttons button:hover {
+  background: #0c7f7b;
+}
+
+/* Overview Section */
+.overview-section {
+  min-height: 100vh;
+  background: #EFE9E0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  display: none;
+}
+
+.overview-content {
+  max-width: 1200px;
+  padding: 4rem;
+  text-align: center;
+}
+
+.overview-content h2 {
+  font-size: 3.0rem;
+  margin-bottom: 3rem;
+  font-family: 'Playfair Display', serif;
+  color: #0F9E99;
+}
+
+.features {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.feature-card {
+  background: #ffffff;
+  border: 1px solid #ccc;
+  padding: 2.5rem;
+  border-radius: 12px;
+  max-width: 350px;
+  transition: transform 0.3s ease;
+  color: #0F9E99;
+}
+
+.feature-card:hover {
+  transform: translateY(-10px);
+}
+
+.feature-card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.feature-card p {
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: #2f2f2f;
+}
+
+/* Responsive Design (same as before, optional tweaks for colors if needed) */

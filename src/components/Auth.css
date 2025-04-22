@@ -1,0 +1,97 @@
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(rgba(130, 130, 130, 0.7), rgba(0, 0, 0, 0.2)), 
+    url('https://i.pinimg.com/736x/e4/63/c5/e463c56344d22cd354e2b6eba4bcc165.jpg');
+    background-size: cover;
+  background-position: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #fff;
+  }
+  
+  .auth-container h1 {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    font-family: 'Playfair Display', serif;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    right: 340px;
+    top: 10px;
+  }
+  
+  .auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    right: 340px;
+    top: 10px;
+  }
+  
+  .auth-form input {
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    
+  }
+  .auth-form select{
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    
+  }
+  
+  .auth-form input:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  .auth-form select:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  
+  .auth-btn {
+    padding: 0.8rem;
+    background: linear-gradient(45deg, #bcc2c4, #0d4325);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .auth-btn:hover {
+    transform: scale(1.05);
+  }
+  
+  .auth-container p {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+  
+  .auth-container a {
+    color: #f0e68c;
+    text-decoration: none;
+  }
+  
+  .auth-container a:hover {
+    text-decoration: underline;
+  }
