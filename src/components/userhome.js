@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import './userhome.css';
 
@@ -12,6 +12,9 @@ const UserDashboard = () => {
   const [driverEmail, setDriverEmail] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [requestId, setRequestId] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const email = sessionStorage.getItem('loggedInEmail');
@@ -34,6 +37,7 @@ const UserDashboard = () => {
       setStatus(`Ambulance booked by: ${driverEmail}`);
       setDriverEmail(driverEmail);
       setRequestId(requestId);
+      socket.emit('joinChat', requestId);
     });
 
     socket.on('requestCancelled', () => {
@@ -41,6 +45,7 @@ const UserDashboard = () => {
       setDriverEmail('');
       setRequestId(null);
       setEmergencyType(null);
+      setChatMessages([]);
     });
 
     socket.on('requestCompleted', () => {
@@ -48,14 +53,26 @@ const UserDashboard = () => {
       setDriverEmail('');
       setRequestId(null);
       setEmergencyType(null);
+      setChatMessages([]);
+    });
+
+    socket.on('chatMessage', ({ requestId: msgRequestId, sender, message }) => {
+      if (requestId === msgRequestId) {
+        setChatMessages((prev) => [...prev, { sender, message }]);
+      }
     });
 
     return () => {
       socket.off('requestAccepted');
       socket.off('requestCancelled');
       socket.off('requestCompleted');
+      socket.off('chatMessage');
     };
-  }, []);
+  }, [requestId]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   const sendRequest = async (emergency) => {
     if (requestId) {
@@ -110,6 +127,7 @@ const UserDashboard = () => {
         setDriverEmail('');
         setRequestId(null);
         setEmergencyType(null);
+        setChatMessages([]);
       } else {
         const data = await res.json();
         setStatus(data.message);
@@ -119,16 +137,29 @@ const UserDashboard = () => {
     }
   };
 
+  const sendChatMessage = () => {
+    if (chatInput.trim() && requestId) {
+      socket.emit('chatMessage', {
+        requestId,
+        sender: userEmail,
+        message: chatInput,
+      });
+      setChatMessages((prev) => [...prev, { sender: userEmail, message: chatInput }]);
+      setChatInput('');
+    }
+  };
+
   return (
     <div className="user-dashboard">
-      <h2>Your Current Location</h2>
-      <div id="map">
+      <h2>Book an Ambulance</h2>
+
+      <div className="map-container">
         {location ? (
           <iframe
             width="100%"
             height="300px"
             frameBorder="0"
-            style={{ border: 0 }}
+            style={{ border: '2px solid #0F9E99', borderRadius: '10px' }}
             src={`https://maps.google.com/maps?q=${location.latitude},${location.longitude}&z=15&output=embed`}
             allowFullScreen
           ></iframe>
@@ -138,19 +169,19 @@ const UserDashboard = () => {
       </div>
 
       {!requestId && (
-        <button onClick={() => setPopup(true)}>Book Ambulance</button>
+        <button className="main-btn" onClick={() => setPopup(true)}>Book Ambulance</button>
       )}
       {requestId && (
-        <button onClick={cancelRequest} style={{ backgroundColor: 'red' }}>
+        <button className="cancel-btn" onClick={cancelRequest}>
           Cancel Request
         </button>
       )}
       {popup && (
         <div className="popup">
           <h4>Select Emergency Type</h4>
-          <button onClick={() => sendRequest('emergency')}>Emergency</button>
-          <button onClick={() => sendRequest('not-emergency')}>Not Emergency</button>
-          <button onClick={() => setPopup(false)}>Cancel</button>
+          <button className="option-btn" onClick={() => sendRequest('emergency')}>Emergency</button>
+          <button className="option-btn" onClick={() => sendRequest('not-emergency')}>Not Emergency</button>
+          <button className="cancel-btn" onClick={() => setPopup(false)}>Close</button>
         </div>
       )}
       <p>{status}</p>
@@ -158,6 +189,35 @@ const UserDashboard = () => {
         <p>
           <strong>Driver's Email:</strong> {driverEmail}
         </p>
+      )}
+
+      {requestId && driverEmail && (
+        <div className="user-chat-box">
+          <h4>Chat with Driver</h4>
+          <div className="user-chat-messages">
+            {chatMessages.map((msg, index) => (
+              <div
+                key={index}
+                className={`user-chat-message ${
+                  msg.sender === userEmail ? 'user-message-self' : 'user-message-other'
+                }`}
+              >
+                <strong>{msg.sender}:</strong> {msg.message}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+          <div className="user-chat-input">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+            />
+            <button onClick={sendChatMessage}>Send</button>
+          </div>
+        </div>
       )}
     </div>
   );
