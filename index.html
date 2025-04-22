@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Map Example</title>
+  <style>
+    #map {
+      width: 100%;
+      max-width: 700px;
+      height: 300px;
+      margin: 20px auto;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h2>Your Current Location</h2>
+  <div id="map">Loading map...</div>
+
+  <script>
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        document.getElementById("map").innerHTML = `
+          <iframe
+            width="100%"
+            height="100%"
+            frameborder="0"
+            style="border:0"
+            src="https://maps.google.com/maps?q=${latitude},${longitude}&z=15&output=embed"
+            allowfullscreen>
+          </iframe>`;
+      },
+      error => {
+        document.getElementById("map").innerText = "Unable to access your location. Please enable location services.";
+      }
+    );
+  </script>
+</body>
+</html>
