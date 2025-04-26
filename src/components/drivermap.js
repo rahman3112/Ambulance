@@ -1266,6 +1266,7 @@ const DriverMap = () => {
       socket.emit('joinChat', requestId);
     } else {
       setError('No user logged in');
+      navigate('/login');
     }
 
     socket.on('chatMessage', ({ requestId: msgRequestId, sender, message }) => {
@@ -1277,7 +1278,7 @@ const DriverMap = () => {
     return () => {
       socket.off('chatMessage');
     };
-  }, [requestId]);
+  }, [requestId, navigate]);
 
   // Scroll to latest chat message
   useEffect(() => {
@@ -1292,7 +1293,10 @@ const DriverMap = () => {
         const data = await response.json();
         console.log('Ambulance Request Data:', data);
         if (response.ok) {
-          setUserLocation({ latitude: 17.3616, longitude: 78.4747 });     
+          setUserLocation({
+            latitude:  17.3850,
+            longitude: 78.4867,
+          });
         } else {
           setError(data.message);
         }
@@ -1406,8 +1410,17 @@ const DriverMap = () => {
         });
 
         const calculateRoutesDebounced = debounce((currentPos) => {
-          console.log('Calculating routes for position:', currentPos);
-          const routeLayers = ['route-driver-to-user', 'route-user-to-hospital'];
+          console.log('Calculating routes with locations:', {
+            driver: currentPos,
+            user: userLocation,
+            hospital: hospitalLocation,
+          });
+          const routeLayers = [
+            'route-driver-to-user',
+            'route-driver-to-user-alt1',
+            'route-driver-to-user-alt2',
+            'route-user-to-hospital',
+          ];
 
           // Remove existing layers and sources
           routeLayers.forEach((layerId) => {
@@ -1425,32 +1438,72 @@ const DriverMap = () => {
             }
           });
 
-          // Calculate route from driver to user
+          // Calculate route from driver to user with alternatives
           window.tt.services
             .calculateRoute({
               key: API_KEY,
               locations: `${currentPos.lng},${currentPos.lat}:${userLocation.longitude},${userLocation.latitude}`,
+              traffic: 'live',
+              computeAlternativeRoutes: true,
+              maxAlternatives: 2,
             })
             .then((routeData) => {
               const geojson = routeData.toGeoJson();
-              try {
-                mapRef.current.addSource('route-driver-to-user', {
-                  type: 'geojson',
-                  data: geojson,
-                });
-                mapRef.current.addLayer({
-                  id: 'route-driver-to-user',
-                  type: 'line',
-                  source: 'route-driver-to-user',
-                  paint: {
-                    'line-color': '#00aaff',
-                    'line-width': 5,
-                  },
-                });
-                console.log('Driver-to-user route added');
-              } catch (err) {
-                console.error('Error adding driver-to-user route:', err);
-                setError('Failed to add driver-to-user route');
+              console.log('GeoJSON features count:', geojson.features.length, 'Features:', geojson.features);
+
+              // Primary route
+              if (geojson.features[0]) {
+                try {
+                  mapRef.current.addSource('route-driver-to-user', {
+                    type: 'geojson',
+                    data: { type: 'FeatureCollection', features: [geojson.features[0]] },
+                  });
+                  mapRef.current.addLayer({
+                    id: 'route-driver-to-user',
+                    type: 'line',
+                    source: 'route-driver-to-user',
+                    paint: {
+                      'line-color': '#00aaff',
+                      'line-width': 5,
+                      'line-dasharray': [1, 0],
+                    },
+                  });
+                  console.log('Primary route added');
+                } catch (err) {
+                  console.error('Error adding primary route:', err);
+                  setError('Failed to add primary route');
+                }
+              } else {
+                console.warn('No primary route returned');
+              }
+
+              // Alternative routes
+              geojson.features.slice(1).forEach((feature, index) => {
+                const layerId = `route-driver-to-user-alt${index + 1}`;
+                try {
+                  mapRef.current.addSource(layerId, {
+                    type: 'geojson',
+                    data: { type: 'FeatureCollection', features: [feature] },
+                  });
+                  mapRef.current.addLayer({
+                    id: layerId,
+                    type: 'line',
+                    source: layerId,
+                    paint: {
+                      'line-color': index === 0 ? '#888888' : '#aaaaaa',
+                      'line-width': 3,
+                      'line-dasharray': [2, 2],
+                    },
+                  });
+                  console.log(`Alternative route ${layerId} added with coordinates:`, feature.geometry.coordinates);
+                } catch (err) {
+                  console.error(`Error adding alternative route ${layerId}:`, err);
+                  setError(`Failed to add alternative route ${layerId}`);
+                }
+              });
+
+              if (geojson.features.length < 2) {
+                console.warn('No alternative routes returned. Try different coordinates or check API key.');
               }
             })
             .catch((err) => {
@@ -1463,6 +1516,7 @@ const DriverMap = () => {
             .calculateRoute({
               key: API_KEY,
               locations: `${userLocation.longitude},${userLocation.latitude}:${hospitalLocation.longitude},${hospitalLocation.latitude}`,
+              traffic: 'live',
             })
             .then((routeData) => {
               const geojson = routeData.toGeoJson();
@@ -1491,7 +1545,7 @@ const DriverMap = () => {
               console.error('Error calculating user-to-hospital route:', err);
               setError('Failed to calculate route to hospital');
             });
-        }, 10000); // Increased debounce delay to prevent rapid updates
+        }, 10000);
 
         navigator.geolocation.watchPosition(
           (position) => {
@@ -1523,15 +1577,21 @@ const DriverMap = () => {
 
             mapRef.current.fitBounds(bounds, {
               padding: 50,
-              maxZoom: 14,
+              maxZoom: 12, // Reduced to show wider area
             });
 
+            // Create custom ambulance icon for driver
             if (!userMarkerRef.current) {
               try {
-                userMarkerRef.current = new window.tt.Marker()
+                const driverIcon = document.createElement('div');
+                driverIcon.style.width = '32px';
+                driverIcon.style.height = '32px';
+                driverIcon.style.backgroundImage = 'url(https://cdn-icons-png.flaticon.com/512/2972/2972427.png)';
+                driverIcon.style.backgroundSize = 'cover';
+                userMarkerRef.current = new window.tt.Marker({ element: driverIcon })
                   .setLngLat([currentPos.lng, currentPos.lat])
                   .addTo(mapRef.current);
-                console.log('Driver marker created');
+                console.log('Driver marker created with ambulance icon');
               } catch (err) {
                 console.error('Error creating driver marker:', err);
                 setError('Failed to create driver marker');
@@ -1603,7 +1663,7 @@ const DriverMap = () => {
         }
       }
     };
-  }, [userLocation, hospitalLocation, userEmail, requestId]);
+  }, [userLocation, hospitalLocation, userEmail, requestId, navigate]);
 
   // Complete request
   const completeRequest = async () => {
