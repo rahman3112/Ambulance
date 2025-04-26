@@ -78,7 +78,6 @@
   }
   
 
-  /* Existing styles remain unchanged, append the following */
 
   .driver-chat-box {
     position: fixed;
@@ -157,3 +156,18 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+  
+/* Add this to driverhome.css */
+.map-container {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+.map-container iframe {
+  width: 100%;
+  height: 300px;
+  border: 2px solid #0F9E99;
+  border-radius: 10px;
+}

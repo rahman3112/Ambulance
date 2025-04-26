@@ -1,0 +1,49 @@
+/* .police-home {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .police-home h2 {
+    margin-bottom: 20px;
+  }
+  
+  .error {
+    color: red;
+    margin-bottom: 10px;
+  } */
+
+
+  .police-home {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .police-home h2, .police-home h3 {
+    margin-bottom: 20px;
+  }
+  
+  .police-home ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .police-home li {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .police-home button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .police-home button:hover {
+    background-color: #0056b3;
+  }

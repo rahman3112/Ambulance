@@ -153,7 +153,7 @@ const UserDashboard = () => {
     <div className="user-dashboard">
       <h2>Book an Ambulance</h2>
 
-      <div className="map-container">
+      <div className="map-container1">
         {location ? (
           <iframe
             width="100%"

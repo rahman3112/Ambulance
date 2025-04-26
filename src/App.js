@@ -5,6 +5,9 @@ import Signup from './components/signup';
 import Home from './components/home';
 import DriverHome from './components/driverhome';
 import UserDashboard from './components/userhome';
+import DriverMap from './components/drivermap';
+import PoliceHome from './components/policehome';
+import PoliceMap from './components/policemap';
 function App() {
   const handleLogin = (email) => {
     console.log("User logged in with email:", email);
@@ -19,10 +22,9 @@ function App() {
           <Route path='/signup' element={<Signup />} />
           <Route path='/driverhome' element={<DriverHome />} />
           <Route path='/userhome' element={<UserDashboard/>} />
-
-
-
-
+          <Route path="/policehome" element={<PoliceHome />} />
+          <Route path="/policemap/:requestId" element={<PoliceMap />} />
+          <Route path="/drivermap/:requestId" element={<DriverMap />} />
         </Routes>
       </Router>
     </div>
